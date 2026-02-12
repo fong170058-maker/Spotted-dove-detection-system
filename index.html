@@ -1,0 +1,812 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕊️ 珠颈斑鸠智能检测系统</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div id="loading" class="loading-screen">
+        <div class="loading-content">
+            <div class="spinner-container">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-center">
+                    <i class="fas fa-dove"></i>
+                </div>
+            </div>
+            <h2 class="animate__animated animate__fadeInUp">珠颈斑鸠智能检测系统</h2>
+            <p class="animate__animated animate__fadeInUp animate__delay-1s">正在初始化智能视觉引擎...</p>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- Logo -->
+            <div class="nav-brand">
+                <div class="logo-icon">
+                    <i class="fas fa-dove"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>斑鸠视觉</h1>
+                    <p class="logo-subtitle">AI智能监测系统</p>
+                </div>
+            </div>
+
+            <!-- 导航菜单 -->
+            <div class="nav-menu">
+                <a href="#dashboard" class="nav-link active" data-tooltip="仪表板">
+                    <div class="nav-icon">
+                        <i class="fas fa-chart-network"></i>
+                    </div>
+                    <span class="nav-text">仪表板</span>
+                </a>
+                <a href="#detection" class="nav-link" data-tooltip="实时检测">
+                    <div class="nav-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <span class="nav-text">实时检测</span>
+                </a>
+                <a href="#statistics" class="nav-link" data-tooltip="统计分析">
+                    <div class="nav-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <span class="nav-text">统计分析</span>
+                </a>
+                <a href="#data" class="nav-link" data-tooltip="数据管理">
+                    <div class="nav-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <span class="nav-text">数据管理</span>
+                </a>
+                <a href="#settings" class="nav-link" data-tooltip="系统设置">
+                    <div class="nav-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <span class="nav-text">系统设置</span>
+                </a>
+            </div>
+
+            <!-- 系统状态 -->
+            <div class="nav-actions">
+                <div class="system-status-card">
+                    <div class="status-indicator">
+                        <span id="status-indicator" class="status offline"></span>
+                        <span id="connection-status">离线</span>
+                    </div>
+                    <div class="system-info">
+                        <div class="info-item">
+                            <i class="fas fa-microchip"></i>
+                            <span id="cpu-load">--%</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-memory"></i>
+                            <span id="memory-usage">--%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="fullscreen-btn" class="action-btn" data-tooltip="全屏模式">
+                        <i class="fas fa-expand-alt"></i>
+                    </button>
+                    <button id="theme-toggle" class="action-btn" data-tooltip="切换主题">
+                        <i class="fas fa-palette"></i>
+                    </button>
+                    <button id="help-btn" class="action-btn" data-tooltip="帮助中心">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                    <button id="user-profile" class="action-btn user-btn" data-tooltip="用户设置">
+                        <i class="fas fa-user"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <!-- 快速控制卡片 -->
+            <div class="control-card glass-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tachometer-alt-fast"></i> 快速控制</h3>
+                    <span class="card-badge">实时</span>
+                </div>
+                <div class="control-grid">
+                    <!-- 开始按钮 -->
+                    <button id="start-btn" class="control-button success-btn" disabled>
+                        <div class="button-icon">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="button-content">
+                            <span class="button-title">开始检测</span>
+                            <span class="button-subtitle">启动AI视觉引擎</span>
+                        </div>
+                        <div class="button-badge">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                    </button>
+
+                    <!-- 暂停按钮 -->
+                    <button id="pause-btn" class="control-button warning-btn" disabled>
+                        <div class="button-icon">
+                            <i class="fas fa-pause-circle" id="pause-icon"></i>
+                        </div>
+                        <div class="button-content">
+                            <span class="button-title" id="pause-text">暂停检测</span>
+                            <span class="button-subtitle">暂停当前检测</span>
+                        </div>
+                        <div class="button-badge pulse">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </button>
+
+                    <!-- 停止按钮 -->
+                    <button id="stop-btn" class="control-button danger-btn" disabled>
+                        <div class="button-icon">
+                            <i class="fas fa-stop-circle"></i>
+                        </div>
+                        <div class="button-content">
+                            <span class="button-title">停止检测</span>
+                            <span class="button-subtitle">关闭检测系统</span>
+                        </div>
+                        <div class="button-badge">
+                            <i class="fas fa-power-off"></i>
+                        </div>
+                    </button>
+
+                    <!-- 紧急停止按钮 -->
+                    <button id="emergency-stop-btn" class="control-button emergency-btn">
+                        <div class="button-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="button-content">
+                            <span class="button-title">紧急停止</span>
+                            <span class="button-subtitle">立即终止所有进程</span>
+                        </div>
+                        <div class="button-badge blink">
+                            <i class="fas fa-siren-on"></i>
+                        </div>
+                    </button>
+
+                    <!-- 截图按钮 -->
+                    <button id="snapshot-btn" class="control-button info-btn">
+                        <div class="button-icon">
+                            <i class="fas fa-camera-retro"></i>
+                        </div>
+                        <div class="button-content">
+                            <span class="button-title">截图</span>
+                            <span class="button-subtitle">保存当前画面</span>
+                        </div>
+                        <div class="button-badge">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    </button>
+
+                    <!-- 重置按钮 -->
+                    <button id="reset-btn" class="control-button secondary-btn">
+                        <div class="button-icon">
+                            <i class="fas fa-redo-alt"></i>
+                        </div>
+                        <div class="button-content">
+                            <span class="button-title">重置</span>
+                            <span class="button-subtitle">清除统计数据</span>
+                        </div>
+                        <div class="button-badge">
+                            <i class="fas fa-eraser"></i>
+                        </div>
+                    </button>
+
+                    <!-- 校准按钮 -->
+                    <button id="calibrate-btn" class="control-button primary-btn">
+                        <div class="button-icon">
+                            <i class="fas fa-ruler-combined"></i>
+                        </div>
+                        <div class="button-content">
+                            <span class="button-title">系统校准</span>
+                            <span class="button-subtitle">优化检测精度</span>
+                        </div>
+                        <div class="button-badge">
+                            <i class="fas fa-sliders-h"></i>
+                        </div>
+                    </button>
+
+                    <!-- 导出按钮 -->
+                    <button id="export-btn" class="control-button success-btn">
+                        <div class="button-icon">
+                            <i class="fas fa-file-export"></i>
+                        </div>
+                        <div class="button-content">
+                            <span class="button-title">导出数据</span>
+                            <span class="button-subtitle">导出检测报告</span>
+                        </div>
+                        <div class="button-badge">
+                            <i class="fas fa-download"></i>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- 快捷键提示 -->
+                <div class="shortcut-hint">
+                    <div class="shortcut-item">
+                        <kbd>空格</kbd>
+                        <span>暂停/恢复</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Esc</kbd>
+                        <span>停止</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>S</kbd>
+                        <span>截图</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 实时统计卡片 -->
+            <div class="stats-card glass-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-line"></i> 实时统计</h3>
+                    <span class="card-badge live">LIVE</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item highlight">
+                        <div class="stat-icon">
+                            <i class="fas fa-dove"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-label">累计检测</span>
+                            <span id="stat-total" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+0%</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-label">当前数量</span>
+                            <span id="stat-current" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fas fa-minus"></i>
+                            <span>0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-label">检测速率</span>
+                            <span id="stat-rate" class="stat-value">0.0/min</span>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fas fa-chart-line"></i>
+                            <span>稳定</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-label">平均信心</span>
+                            <span id="stat-confidence" class="stat-value">0.00</span>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fas fa-percentage"></i>
+                            <span>0%</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-label">运行时间</span>
+                            <span id="stat-runtime" class="stat-value">00:00:00</span>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fas fa-running"></i>
+                            <span>进行中</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-film"></i>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-label">帧率</span>
+                            <span id="stat-fps" class="stat-value">0.0 FPS</span>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fas fa-bolt"></i>
+                            <span>流畅</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 性能指示器 -->
+                <div class="performance-meter">
+                    <div class="meter-label">
+                        <span>系统负载</span>
+                        <span id="system-load">0%</span>
+                    </div>
+                    <div class="meter-bar">
+                        <div class="meter-fill" id="load-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 检测设置卡片 -->
+            <div class="settings-card glass-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-sliders-h"></i> 检测设置</h3>
+                    <span class="card-badge">AI</span>
+                </div>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label for="detection-mode">
+                            <i class="fas fa-robot"></i>
+                            <span>检测模式</span>
+                        </label>
+                        <select id="detection-mode" class="select-field">
+                            <option value="optimized">智能优化模式</option>
+                            <option value="yolo">YOLO高性能模式</option>
+                            <option value="simple">轻量简化模式</option>
+                            <option value="motion">运动追踪模式</option>
+                            <option value="simulation">模拟演示模式</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confidence-slider">
+                            <i class="fas fa-bullseye"></i>
+                            <span>信心阈值: <span id="confidence-value">0.4</span></span>
+                        </label>
+                        <input type="range" id="confidence-slider" class="range-slider" min="0.1" max="0.9" step="0.1" value="0.4">
+                        <div class="slider-labels">
+                            <span>低</span>
+                            <span>高</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="min-area">
+                                <i class="fas fa-search-minus"></i>
+                                <span>最小面积</span>
+                            </label>
+                            <input type="number" id="min-area" class="input-field" value="300">
+                        </div>
+                        <div class="form-group half">
+                            <label for="max-area">
+                                <i class="fas fa-search-plus"></i>
+                                <span>最大面积</span>
+                            </label>
+                            <input type="number" id="max-area" class="input-field" value="5000">
+                        </div>
+                    </div>
+
+                    <div class="toggle-group">
+                        <h4><i class="fas fa-eye"></i> 显示选项</h4>
+                        <div class="toggle-grid">
+                            <label class="toggle-item">
+                                <input type="checkbox" id="show-boxes" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label">
+                                    <i class="fas fa-square"></i>
+                                    <span>检测框</span>
+                                </span>
+                            </label>
+                            <label class="toggle-item">
+                                <input type="checkbox" id="show-trails" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label">
+                                    <i class="fas fa-road"></i>
+                                    <span>运动轨迹</span>
+                                </span>
+                            </label>
+                            <label class="toggle-item">
+                                <input type="checkbox" id="show-labels" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label">
+                                    <i class="fas fa-tag"></i>
+                                    <span>识别标签</span>
+                                </span>
+                            </label>
+                            <label class="toggle-item">
+                                <input type="checkbox" id="show-confidence">
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label">
+                                    <i class="fas fa-percentage"></i>
+                                    <span>信心值</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button id="apply-settings" class="apply-button">
+                        <i class="fas fa-check-circle"></i>
+                        <span>应用设置</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="content-area">
+            <!-- 视频监控面板 -->
+            <div class="monitor-card glass-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-video"></i> 实时监控画面</h2>
+                    <div class="header-actions">
+                        <div class="source-selector">
+                            <button class="source-btn active" data-source="camera">
+                                <i class="fas fa-camera"></i>
+                                <span>摄像头</span>
+                            </button>
+                            <button class="source-btn" data-source="video">
+                                <i class="fas fa-film"></i>
+                                <span>视频文件</span>
+                            </button>
+                            <button class="source-btn" data-source="url">
+                                <i class="fas fa-wifi"></i>
+                                <span>网络流</span>
+                            </button>
+                        </div>
+                        <button id="record-btn" class="record-button">
+                            <i class="fas fa-circle"></i>
+                            <span>录制</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="monitor-container">
+                    <div class="video-wrapper">
+                        <canvas id="video-canvas" class="video-canvas"></canvas>
+
+                        <!-- 视频叠加层 -->
+                        <div class="video-overlay">
+                            <!-- 顶部状态栏 -->
+                            <div class="overlay-top">
+                                <div class="status-badge">
+                                    <span class="status-icon" id="overlay-status-icon">▶️</span>
+                                    <span class="status-text" id="overlay-status">离线</span>
+                                </div>
+                                <div class="time-display">
+                                    <i class="fas fa-clock"></i>
+                                    <span id="overlay-time">00:00:00</span>
+                                </div>
+                            </div>
+
+                            <!-- 中央信息 -->
+                            
+                            <!-- 底部统计 -->
+                            <div class="overlay-bottom">
+                                <div class="stats-bar">
+                                    <div class="stat-item">
+                                        <i class="fas fa-layer-group"></i>
+                                        <span class="stat-value" id="overlay-total">0</span>
+                                        <span class="stat-label">累计</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <i class="fas fa-eye"></i>
+                                        <span class="stat-value" id="overlay-current">0</span>
+                                        <span class="stat-label">当前</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span class="stat-value" id="overlay-fps">0</span>
+                                        <span class="stat-label">FPS</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <i class="fas fa-bullseye"></i>
+                                        <span class="stat-value" id="overlay-confidence">0%</span>
+                                        <span class="stat-label">信心</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 控制提示 -->
+                            <div class="control-hint">
+                                <div class="hint-content">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>双击画面暂停/恢复 • 空格键控制 • ESC停止</span>
+                                </div>
+                            </div>
+
+                            <!-- 录制指示器 -->
+                            <div class="recording-indicator" id="recording-indicator">
+                                <div class="recording-dot"></div>
+                                <span>录制中</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 视频控制 -->
+                    <div class="video-controls">
+                        <div class="control-group">
+                            <button id="play-btn" class="control-btn">
+                                <i class="fas fa-play"></i>
+                                <span>播放</span>
+                            </button>
+                            <button id="step-btn" class="control-btn">
+                                <i class="fas fa-step-forward"></i>
+                                <span>单帧</span>
+                            </button>
+                            <button id="zoom-in-btn" class="control-btn">
+                                <i class="fas fa-search-plus"></i>
+                            </button>
+                            <button id="zoom-out-btn" class="control-btn">
+                                <i class="fas fa-search-minus"></i>
+                            </button>
+                            <button id="screenshot-btn" class="control-btn">
+                                <i class="fas fa-camera"></i>
+                                <span>截图</span>
+                            </button>
+                        </div>
+
+                        <div class="progress-container">
+                            <input type="range" id="video-progress" class="progress-slider" min="0" max="100" value="0">
+                            <div class="time-display">
+                                <span id="video-time-current">00:00</span>
+                                <span>/</span>
+                                <span id="video-time-total">00:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据分析面板 -->
+            <div class="analytics-card glass-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-area"></i> 数据分析</h2>
+                    <div class="header-actions">
+                        <select id="chart-period" class="select-field small">
+                            <option value="hour">最近1小时</option>
+                            <option value="day">最近24小时</option>
+                            <option value="week">最近7天</option>
+                            <option value="month">最近30天</option>
+                        </select>
+                        <button id="export-chart" class="icon-button">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button id="refresh-stats" class="icon-button">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <!-- 趋势图表 -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>检测趋势分析</h3>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: linear-gradient(135deg, #667eea, #764ba2)"></span>
+                                    <span>累计总数</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: linear-gradient(135deg, #f093fb, #f5576c)"></span>
+                                    <span>当前数量</span>
+                                </div>
+                            </div>
+                        </div>
+                        <canvas id="trend-chart" class="chart-canvas"></canvas>
+                    </div>
+
+                    <!-- 分布图表 -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>检测分布统计</h3>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <span>数量分布</span>
+                                </div>
+                            </div>
+                        </div>
+                        <canvas id="distribution-chart" class="chart-canvas"></canvas>
+                    </div>
+
+                    <!-- 详细数据表格 -->
+                    <div class="table-container full-width">
+                        <div class="table-header">
+                            <h3>详细检测记录</h3>
+                            <button id="export-data" class="icon-button">
+                                <i class="fas fa-file-export"></i>
+                                <span>导出数据</span>
+                            </button>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>时间戳</th>
+                                        <th>检测数量</th>
+                                        <th>追踪对象</th>
+                                        <th>累计总数</th>
+                                        <th>当前数量</th>
+                                        <th>帧率</th>
+                                        <th>平均信心</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stats-table-body">
+                                    <!-- 动态生成 -->
+                                    <tr class="empty-row">
+                                        <td colspan="9">
+                                            <div class="empty-state">
+                                                <i class="fas fa-database"></i>
+                                                <p>暂无检测数据</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系统信息面板 -->
+            <div class="system-info-card glass-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-info-circle"></i> 系统信息</h2>
+                    <span class="card-badge system">V4.2.0</span>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>AI模型状态</h4>
+                            <p id="model-status">COCO-SSD 模型已加载</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-memory"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>内存使用</h4>
+                            <p id="system-memory">128 MB / 512 MB</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>CPU负载</h4>
+                            <p id="system-cpu">15%</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-satellite-dish"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>网络状态</h4>
+                            <p id="network-status">在线</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 浮动操作按钮 -->
+    <div class="floating-actions">
+        <button class="fab main-fab" id="quick-start-btn" data-tooltip="快速开始">
+            <i class="fas fa-play"></i>
+        </button>
+        <div class="fab-menu">
+            <button class="fab mini-fab" data-tooltip="帮助文档">
+                <i class="fas fa-question"></i>
+            </button>
+            <button class="fab mini-fab" data-tooltip="设置">
+                <i class="fas fa-cog"></i>
+            </button>
+            <button class="fab mini-fab" data-tooltip="反馈">
+                <i class="fas fa-comment"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 主题切换面板 -->
+    <div class="theme-panel" id="theme-panel">
+        <div class="theme-header">
+            <h4><i class="fas fa-palette"></i> 主题设置</h4>
+            <button class="close-panel">&times;</button>
+        </div>
+        <div class="theme-options">
+            <div class="theme-option active" data-theme="light">
+                <div class="theme-preview light-theme"></div>
+                <span>明亮主题</span>
+            </div>
+            <div class="theme-option" data-theme="dark">
+                <div class="theme-preview dark-theme"></div>
+                <span>深色主题</span>
+            </div>
+            <div class="theme-option" data-theme="blue">
+                <div class="theme-preview blue-theme"></div>
+                <span>蓝色主题</span>
+            </div>
+            <div class="theme-option" data-theme="green">
+                <div class="theme-preview green-theme"></div>
+                <span>绿色主题</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部状态栏 -->
+    <footer class="status-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <div class="update-status">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>最后更新: <span id="last-update">刚刚</span></span>
+                </div>
+                <div class="session-info">
+                    <i class="fas fa-user-clock"></i>
+                    <span>会话时间: <span id="session-time">00:00:00</span></span>
+                </div>
+            </div>
+            <div class="footer-center">
+                <div class="system-health">
+                    <div class="health-item">
+                        <span class="health-label">系统状态:</span>
+                        <span class="health-value" id="footer-status">正常</span>
+                    </div>
+                    <div class="health-item">
+                        <span class="health-label">检测精度:</span>
+                        <span class="health-value" id="detection-accuracy">95.2%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <div class="copyright">
+                    <i class="fas fa-dove"></i>
+                    <span>© 2026 斑鸠视觉智能系统</span>
+                </div>
+                <div class="powered-by">
+                    <i class="fas fa-heart"></i>
+                    <span>Powered by AI Vision</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/zh-cn.min.js"></script>
+
+    <!-- 应用脚本 -->
+    <script src="all-in-one.js"></script>
+    <script src="ui-effects.js"></script>
+</body>
+</html>
