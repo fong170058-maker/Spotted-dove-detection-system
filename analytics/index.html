@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 斑鸠生物智能数据统计分析系统</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-chart-pie animate-pulse"></i>
+                <span>生物检测 - 智能数据统计分析平台</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#" class="nav-item active"><i class="fas fa-th-large"></i> 实时统计仪表板</a>
+                <a href="../index.html" class="nav-item"><i class="fas fa-video"></i> ↖ 返回实时检测镜头</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <div class="stats-grid">
+            <div class="stats-card">
+                <div class="stats-icon text-primary"><i class="fas fa-calculator"></i></div>
+                <div class="stats-info">
+                    <span class="stats-label">累计处理帧数/样本</span>
+                    <span class="stats-value" id="stat-total-samples">0</span>
+                </div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-icon text-success"><i class="fas fa-bolt"></i></div>
+                <div class="stats-info">
+                    <span class="stats-label">主镜头实时吞吐率</span>
+                    <span class="stats-value" id="stat-tps">0.0 FPS</span>
+                </div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-icon text-warning"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="stats-info">
+                    <span class="stats-label">低置信度异常事件</span>
+                    <span class="stats-value" id="stat-anomalies">0</span>
+                </div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-icon text-info"><i class="fas fa-bullseye"></i></div>
+                <div class="stats-info">
+                    <span class="stats-label">系统置信度区间设定</span>
+                    <span class="stats-value">95.0%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="workspace-grid">
+            <div class="card control-card">
+                <h3><i class="fas fa-sliders-h"></i> 统计控制与联动状态</h3>
+                <hr>
+                <div class="control-actions">
+                    <div class="status-box">
+                        <p>跨源联动：<strong id="link-status" class="text-danger">等待主页面激活...</strong></p>
+                    </div>
+                    <button id="export-btn" class="control-button info-btn">
+                        <i class="fas fa-download"></i> 导出分析报告 (JSON)
+                    </button>
+                </div>
+                <div class="settings-note">
+                    <p><i class="fas fa-info-circle"></i> <strong>操作指南:</strong> 请在另一个浏览器标签页打开主检测页面并启动摄像头。本面板将通过跨页网络（Broadcast Pipeline）自动捕获实时遥测指标并计算高级叙述性统计数据。</p>
+                </div>
+            </div>
+
+            <div class="card chart-card-large">
+                <h3><i class="fas fa-chart-area"></i> 动态概率分布 与 置信回归线</h3>
+                <div class="chart-container">
+                    <canvas id="analytics-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="workspace-grid">
+            <div class="card table-card">
+                <h3><i class="fas fa-list-ol"></i> 即时描述性统计指标</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>指标参数</th>
+                                <th>当前计算值</th>
+                                <th>标准差 ($\sigma$)</th>
+                                <th>偏离变动状态</th>
+                            </tr>
+                        </thead>
+                        <tbody id="metrics-table-body">
+                            <tr>
+                                <td>算术平均置信度 (Mean Score)</td>
+                                <td id="tbl-mean">0.00%</td>
+                                <td>&plusmn; 0.05</td>
+                                <td class="text-success" id="tbl-mean-status"><i class="fas fa-minus"></i> 待机</td>
+                            </tr>
+                            <tr>
+                                <td>中位数置信度 (Median Score)</td>
+                                <td id="tbl-median">0.00</td>
+                                <td>--</td>
+                                <td class="text-success"><i class="fas fa-minus"></i> 持平</td>
+                            </tr>
+                            <tr>
+                                <td>方差系数 (Variance Rate)</td>
+                                <td id="tbl-variance">0.0000</td>
+                                <td>&plusmn; 0.02</td>
+                                <td class="text-info" id="tbl-var-status">数据收敛中</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card log-card">
+                <h3><i class="fas fa-terminal"></i> 管道异常日誌与核心通报</h3>
+                <div class="log-stream" id="log-stream">
+                    <div class="log-item system">[系统] 统计分析引擎初始化完毕。正在监听来自本地主页面的数据流水线...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <span>系统连接状态: <strong class="text-danger" id="system-status">等待数据中</strong></span>
+            <span>核心引擎: v2.4.0-Pipeline</span>
+            <span>&copy; 珠颈斑鸠视觉智能分析系统</span>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

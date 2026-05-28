@@ -1,5 +1,31 @@
-// 一体化实时视觉检测系统 - 完整版
-// 包含所有功能和完整的暂停控制
+// 一体化实时视觉检测系统 - 联动分析版
+// 包含所有功能、暂停控制以及跨标签页数据集成桥梁
+
+// ====== 跨标签页数据传输桥梁 ======
+const AnalyticsBridge = {
+    // 创建与网站 B 匹配的广播频道
+    channel: new BroadcastChannel('dove_analytics_pipeline'),
+
+    sendDataTick(stats, detections) {
+        // 获取当前帧中最高的置信度评分
+        const highestConfidence = detections && detections.length > 0 
+            ? Math.max(...detections.map(d => d.score)) 
+            : 0;
+
+        // 组装网站 B 统计引擎所需的参数包
+        const payload = {
+            timestamp: new Date().toLocaleTimeString(),
+            fps: stats.fps || 0,
+            currentDetections: stats.currentDetections || 0,
+            totalDetections: stats.totalDetections || 0,
+            confidencePeak: highestConfidence,
+            detectionTime: stats.detectionTime
+        };
+
+        // 将数据发送到所有同源的浏览器标签页（网站 B）
+        this.channel.postMessage(payload);
+    }
+};
 
 class RealTimeDoveDetector {
     constructor() {
@@ -300,6 +326,9 @@ class RealTimeDoveDetector {
     }
 
     saveDetectionRecord(detections) {
+        // 无论检测到几只鸟（即使是0），都向网站 B 输送即时心跳遥测数据
+        AnalyticsBridge.sendDataTick(this.stats, detections);
+
         if (detections.length === 0) return;
 
         const record = {
